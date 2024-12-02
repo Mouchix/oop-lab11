@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 /**
@@ -31,42 +32,49 @@ public final class MusicGroupImpl implements MusicGroup {
 
     @Override
     public Stream<String> orderedSongNames() {
-        return null;
+        return songs.stream().map(Song::getSongName).sorted();
     }
 
     @Override
     public Stream<String> albumNames() {
-        return null;
+        return albums.keySet().stream();
     }
 
     @Override
     public Stream<String> albumInYear(final int year) {
-        return null;
+        return albums.entrySet().stream().filter(x -> x.getValue() == year).map(Entry::getKey);
     }
 
     @Override
     public int countSongs(final String albumName) {
-        return -1;
+        return (int) songs.stream().filter(song -> song.getAlbumName().orElse("").equals(albumName)).count();
     }
 
     @Override
     public int countSongsInNoAlbum() {
-        return -1;
+        return (int) songs.stream().filter(song -> song.getAlbumName().isEmpty()).count();
     }
 
     @Override
     public OptionalDouble averageDurationOfSongs(final String albumName) {
-        return null;
+        return OptionalDouble.of(songs.stream().filter(song -> 
+        song.getAlbumName().orElse("").equals(albumName)).map(Song::getDuration).reduce((d1, d2) -> 
+        d1 + d2).get() / countSongs(albumName));
     }
 
     @Override
     public Optional<String> longestSong() {
-        return null;
+        return songs.stream().max((s1, s2) -> Double.compare(s1.getDuration(), s2.getDuration())).map(Song::getSongName);
+    }
+
+    private Double sumSongOfAlbum(final String albumName) {
+        return songs.stream().filter(song -> 
+        song.getAlbumName().orElse("").equals(albumName)).map(Song::getDuration).reduce((d1, d2) -> d1 + d2).get();
     }
 
     @Override
     public Optional<String> longestAlbum() {
-        return null;
+        return albums.keySet().stream().max((a, b) -> Double.compare(sumSongOfAlbum(a), sumSongOfAlbum(b)));
     }
 
     private static final class Song {
