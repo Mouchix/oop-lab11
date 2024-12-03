@@ -43,8 +43,12 @@ public final class LambdaFilter extends JFrame {
         LOWER_CASE("Lower case", String::toLowerCase),
         COUNT_CHAR("Count char", a -> Integer.toString(a.length())),
         COUNT_LINE("Count line", a -> Long.toString(a.lines().count())),
-        ALPHABETICAL_ORDER("Alphabetical order", a -> List.of(a.split(" ")).stream().sorted().toList().toString());
-        //COUNT_OF_EACH_WORD("Count of each word");
+        ALPHABETICAL_ORDER("Alphabetical order", a -> 
+        List.of(a.split(" ")).stream().sorted().toList().toString()),
+        COUNT_OF_EACH_WORD("Count of each word", a -> 
+        List.of(a.split(" ")).stream().map(b -> b + " -> " + 
+        List.of(a.split(" ")).stream().filter(c -> 
+        b.equals(c)).count()).distinct().map(c -> "\n" + c).toList().toString());
 
         private final String commandName;
         private final Function<String, String> fun;
@@ -66,7 +70,7 @@ public final class LambdaFilter extends JFrame {
 
     private LambdaFilter() {
         super("Lambda filter GUI");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         final JPanel panel1 = new JPanel();
         final LayoutManager layout = new BorderLayout();
         panel1.setLayout(layout);
